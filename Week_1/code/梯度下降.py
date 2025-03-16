@@ -17,10 +17,27 @@ if __name__ == '__main__':
     finalx=stepdown(x,learningrate,iteration)
     print(finalx)
     x_values = np.linspace(-10, 10, 400)
-    plt.plot(x_values, fx(x_values), label='fx')
+    plt.plot(x_values, fx(x_values), label='f(x)')
     plt.scatter(finalx, fx(finalx), color='red', label="Optimal Point")
     plt.xlabel("x")
     plt.ylabel("f(x)")
     plt.legend()
     plt.title("Gradient Descent Optimization")
     plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
