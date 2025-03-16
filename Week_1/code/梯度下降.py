@@ -18,11 +18,11 @@ if __name__ == '__main__':
     print(finalx)
     x_values = np.linspace(-10, 10, 400)
     plt.plot(x_values, fx(x_values), label='f(x)')
-    plt.scatter(finalx, fx(finalx), color='red', label="Optimal Point")
+    plt.scatter(finalx, fx(finalx), color='red', label="minPoint")
     plt.xlabel("x")
     plt.ylabel("f(x)")
     plt.legend()
-    plt.title("Gradient Descent Optimization")
+    plt.title("梯度下降eg")
     plt.show()
 
 
