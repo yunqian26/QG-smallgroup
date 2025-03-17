@@ -34,7 +34,7 @@ if __name__== '__main__':
     dataraw=pd.read_csv("D:\\document\\GitHub\\QG-smallgroup\\Week_1\\code\\boston.csv")
     lengthofdata=np.arange(len(dataraw))
     shuff=dataraw.sample(frac=1).reset_index(drop=True)
-    ratio=0.2
+    ratio=0.8
     ratio_point=int(len(shuff)*ratio)
     data=shuff[:ratio_point]
     print(data.head())
