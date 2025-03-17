@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sympy.physics.units import length
 
 '''
 CRIM：城镇人均犯罪率。
@@ -19,56 +18,74 @@ B：1000×(Bk - 0.63)^2，其中Bk是城镇黑人的比例。
 LSTAT：低收入阶层人口比例。
 MEDV:自有住房的中位数价格，单位为1000美元
 '''
+def step_descent(x,y,learningrate=0.02,iterations=100):
+    a1,b1=x.shape
+    opening=np.zeros(b1)
+    drops=[]
+    for iteration in range(iterations):
+        prediction =x @ opening
+        diff=prediction-y
+        drop=(1/(2*a1))*np.sum(diff**2)
+        drops.append(drop)
+        step=(1/a1)*(x.T @ diff)
+        opening =opening-learningrate*step
+    return opening,drops
 
-def minplus2(x, y):
-    A = np.vstack([x, np.ones(len(x))]).T
-    coefficients, residuals, rank, s = np.linalg.lstsq(A, y, rcond=-1)
+def minplus2(x, y,learningrate=0.02,iterations=100):
+    e = np.vstack([x, np.ones(len(x))]).T
+    # coefficients, residuals, rank, s = np.linalg.lstsq(e, y, rcond=-1)
+    coefficients,drops = step_descent(e,y,learningrate=learningrate,iterations=iterations)
     x_coeff, y_coeff = coefficients
     print(f"拟合的直线方程为：y = {x_coeff:.2f}x + {y_coeff:.2f}")
     x_fit = np.linspace(min(x), max(x), num=20)
     y_fit = x_coeff * x_fit + y_coeff
     plt.plot(x_fit, y_fit, color='red', label=f'拟合曲线: y = {x_coeff:.2f}x+ {y_coeff:.2f}')
-    plt.show()
+
+
+    predict_y=e@coefficients
+    mse=np.mean((y-predict_y)**2)#均方误差
+    mae=np.mean(np.abs(y-predict_y))
+    rmse=np.sqrt(mse/len(y))
+    r_2=1-(np.sum((y-predict_y)**2)/np.sum((y-np.mean(y))**2))
+    print('回归系数：',coefficients)
+    print(f'均方误差：{mse:.4f}')
+    print(f'绝对误差：{mae:.4f}')
+    print(f'均方根误差：{rmse:.4f}')
+    print(f'绝对系数：{r_2:.4f}')
 
 if __name__== '__main__':
-    dataraw=pd.read_csv("D:\\document\\GitHub\\QG-smallgroup\\Week_1\\code\\boston.csv")
+    dataraw=pd.read_csv("D:\\OneDrive\\文档\\GitHub\\QG-smallgroup\\Week_1\\code\\boston.csv")
     lengthofdata=np.arange(len(dataraw))
     shuff=dataraw.sample(frac=1).reset_index(drop=True)
     ratio=0.8
     ratio_point=int(len(shuff)*ratio)
     data=shuff[:ratio_point]
-    print(data.head())
-    print(data.isnull().sum())
-    print(data.describe())
-    print(data.shape)
-    print(dataraw.head)
-    # # print(data.dtypes)
+    # print(data.head())
+    # print(data.isnull().sum())
+    # print(data.describe())
+    # print(data.shape)
+    # print(dataraw.head)
+    # print(data.dtypes)
     # print(data["PIRATIO"])
-    # # plt.figure(figsize=(8, 4))
-    # # plt.boxplot(data["CRIM"])
-    # # plt.title("Boxplot of CRIM")
-    # # plt.show()
+    # plt.figure(figsize=(8, 4))
+    # plt.boxplot(data["CRIM"])
+    # plt.title("Boxplot of CRIM")
+    # plt.show()
     # plt.figure(figsize=(8, 4))
     # plt.boxplot(data["PIRATIO"])
     # plt.title("Boxplot of PIRATIO")
     # plt.show()
-    # # plt.figure(figsize=(8, 4))
-    # # plt.boxplot(data["CHAS"])
-    # # plt.title("Boxplot of CHAS")
-    # # plt.show()
-    # # plt.figure(figsize=(8, 4))
-    # # plt.boxplot(data["INDUS"])
-    # # plt.title("Boxplot of INDUS")
-    # # plt.show()
+    # plt.figure(figsize=(8, 4))
+    # plt.boxplot(data["CHAS"])
+    # plt.title("Boxplot of CHAS")
+    # plt.show()
+    # plt.figure(figsize=(8, 4))
+    # plt.boxplot(data["INDUS"])
+    # plt.title("Boxplot of INDUS")
+    # plt.show()
 
     # #数据预处理
-    #线箱法
-    Q1_piratio = data["PIRATIO"].quantile(0.25)
-    Q3_piratio = data["PIRATIO"].quantile(0.75)
-    diff=Q3_piratio-Q1_piratio
-    low=Q1_piratio-diff*1.5
-    high=Q3_piratio+diff*1.5
-    data=data[(data["PIRATIO"]>=low)&(data["PIRATIO"]<=high)]
+
     #z分数法
     mean_CRIM=data['CRIM'].mean()
     std_CRIM=data['CRIM'].std()
@@ -96,7 +113,7 @@ if __name__== '__main__':
     #房价（MEDV）与犯罪率（CRIM）,散点图
     data1=data.copy()
     data1.loc[data['CRIM']<=0.5,'MEDV']=aver_of_price
-    data1=data1[data1['MEDV']<48]
+    data1=data1[data1['MEDV']<45]
     plt.scatter(data1['CRIM'], data1['MEDV'],c='r',alpha=0.5,label='CRIM')
     plt.title('Price Crimrates')
     plt.xlabel('CRIM')
@@ -116,12 +133,20 @@ if __name__== '__main__':
 
 
     #房价(MEDV)与学生与教师比例(PTRATIO),折线图
-    price_ptratip=data.groupby('PIRATIO')['MEDV'].mean()
+    # 线箱法
+    data2=data.copy()
+    Q1_piratio = data2["PIRATIO"].quantile(0.25)
+    Q3_piratio = data2["PIRATIO"].quantile(0.75)
+    diff = Q3_piratio - Q1_piratio
+    low = Q1_piratio - diff * 1.5
+    high = Q3_piratio + diff * 1.5
+    data2 = data2[(data2["PIRATIO"] >= low) & (data2["PIRATIO"] <= high)]
+    price_ptratip=data2.groupby('PIRATIO')['MEDV'].mean()
     price_ptratip.plot(color=['b'])
     plt.title('Price by Piratio')
     plt.xlabel('Piratio')
     plt.ylabel('Price')
-    minplus2(data['PIRATIO'], data['MEDV'])
+    minplus2(data2['PIRATIO'], data2['MEDV'])
     plt.show()
 
     #

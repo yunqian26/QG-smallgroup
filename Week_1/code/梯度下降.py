@@ -13,7 +13,7 @@ if __name__ == '__main__':
     x=np.arange(-10,11,1)
     y=np.arange(-10,11,1)
     learningrate=0.1
-    iteration=30
+    iteration=100
     finalx=stepdown(x,learningrate,iteration)
     print(finalx)
     x_values = np.linspace(-10, 10, 400)
