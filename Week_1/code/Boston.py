@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from pyexpat import features
 
 '''
 CRIM：城镇人均犯罪率。
@@ -56,12 +55,15 @@ def minplus2(x, y,learningrate=0.02,iterations=100,type='none'):
     print(f'绝对系数：{r_2:.4f}')
 
 if __name__== '__main__':
-    dataraw=pd.read_csv("D:\\OneDrive\\文档\\GitHub\\QG-smallgroup\\Week_1\\code\\boston.csv")
+    dataraw=pd.read_csv("boston.csv")
     lengthofdata=np.arange(len(dataraw))
     shuff=dataraw.sample(frac=1).reset_index(drop=True)
     ratio=0.8
+    ratio_reflect=1-ratio
     ratio_point=int(len(shuff)*ratio)
+    ratio_repoint=int(len(shuff)*ratio_reflect)
     data=shuff[:ratio_point]
+    data_reflect=shuff[ratio_repoint:]
     # print(data.head())
     # print(data.isnull().sum())
     # print(data.describe())
@@ -98,23 +100,23 @@ if __name__== '__main__':
     # plt.figure(figsize=[10, 10])
     #
     # # 遍历每个特征
-    # for j in range(data.shape[1]):
-    #     # 获取当前特征的数据
-    #     x = data.iloc[:, j]
-    #     # 绘制散点图
-    #     plt.scatter([i for i in range(data.shape[0])], x, label='data point', alpha=0.6)
-    #     # 计算分位数
-    #     quantiles = np.quantile(x, [0.25, 0.5, 0.75])
-    #     # 绘制分位数点
-    #     plt.scatter([round(data.shape[0] / 4), round(data.shape[0] / 2), round(data.shape[0] / 4 * 3)],
-    #                 quantiles, color='red', label='fen wei shu dian')
-    #     # 添加标签和标题
-    #     features_name=data.columns[j]
-    #     plt.xlabel('data suoyin')
-    #     plt.ylabel('MEDV')
-    #     plt.title(f'tezheng:{features_name}')
-    #     plt.legend()
-    #     plt.show()
+    for j in range(data.shape[1]):
+        # 获取当前特征的数据
+        x = data.iloc[:, j]
+        # 绘制散点图
+        plt.scatter([i for i in range(data.shape[0])], x, label='data point', alpha=0.6)
+        # 计算分位数
+        quantiles = np.quantile(x, [0.25, 0.5, 0.75])
+        # 绘制分位数点
+        plt.scatter([round(data.shape[0] / 4), round(data.shape[0] / 2), round(data.shape[0] / 4 * 3)],
+                    quantiles, color='red', label='fen wei shu dian')
+        # 添加标签和标题
+        features_name=data.columns[j]
+        plt.xlabel('data suoyin')
+        plt.ylabel('MEDV')
+        plt.title(f'tezheng:{features_name}')
+        plt.legend()
+        plt.show()
 
 
     num_features = data.shape[1] - 1  # 减去目标变量 'MEDV'
@@ -127,14 +129,13 @@ if __name__== '__main__':
         plt.ylabel('MEDV')
         plt.legend()
         plt.show()
-
-
-
-
-
-
-
-
+    '''
+    LSTAT
+    RM
+    DIS
+    AGE
+    CRIM
+    '''
 
 
 
