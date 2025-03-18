@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from pyexpat import features
 
 '''
 CRIM：城镇人均犯罪率。
@@ -31,16 +32,17 @@ def step_descent(x,y,learningrate=0.02,iterations=100):
         opening =opening-learningrate*step
     return opening,drops
 
-def minplus2(x, y,learningrate=0.02,iterations=100):
+def minplus2(x, y,learningrate=0.02,iterations=100,type='none'):
     e = np.vstack([x, np.ones(len(x))]).T
-    # coefficients, residuals, rank, s = np.linalg.lstsq(e, y, rcond=-1)
-    coefficients,drops = step_descent(e,y,learningrate=learningrate,iterations=iterations)
+    if type=='none':
+        coefficients, residuals, rank, s = np.linalg.lstsq(e, y, rcond=-1)
+    elif type=='step':
+        coefficients,drops = step_descent(e,y,learningrate=learningrate,iterations=iterations)
     x_coeff, y_coeff = coefficients
     print(f"拟合的直线方程为：y = {x_coeff:.2f}x + {y_coeff:.2f}")
     x_fit = np.linspace(min(x), max(x), num=20)
     y_fit = x_coeff * x_fit + y_coeff
     plt.plot(x_fit, y_fit, color='red', label=f'拟合曲线: y = {x_coeff:.2f}x+ {y_coeff:.2f}')
-
 
     predict_y=e@coefficients
     mse=np.mean((y-predict_y)**2)#均方误差
@@ -84,17 +86,71 @@ if __name__== '__main__':
     # plt.title("Boxplot of INDUS")
     # plt.show()
 
-    # #数据预处理
+    #数据预处理
+    # plt.figure(figsize=[10, 10])  # 设置整个图的大小
+    # for i in range(data.shape[1]):  # 遍历每一列
+    #     plt.subplot(4,4, i + 1)  # 使用 5×5 的网格布局
+    #     plt.boxplot(data.iloc[:, i], showmeans=True, meanline=False)  # 绘制箱线图并显示均值线
+    #     plt.xlabel(data.columns[i])  # 使用列名作为 x 轴标签
+    # plt.tight_layout()  # 自动调整子图布局，避免重叠
+    # plt.show()
+    #
+    # plt.figure(figsize=[10, 10])
+    #
+    # # 遍历每个特征
+    # for j in range(data.shape[1]):
+    #     # 获取当前特征的数据
+    #     x = data.iloc[:, j]
+    #     # 绘制散点图
+    #     plt.scatter([i for i in range(data.shape[0])], x, label='data point', alpha=0.6)
+    #     # 计算分位数
+    #     quantiles = np.quantile(x, [0.25, 0.5, 0.75])
+    #     # 绘制分位数点
+    #     plt.scatter([round(data.shape[0] / 4), round(data.shape[0] / 2), round(data.shape[0] / 4 * 3)],
+    #                 quantiles, color='red', label='fen wei shu dian')
+    #     # 添加标签和标题
+    #     features_name=data.columns[j]
+    #     plt.xlabel('data suoyin')
+    #     plt.ylabel('MEDV')
+    #     plt.title(f'tezheng:{features_name}')
+    #     plt.legend()
+    #     plt.show()
+
+
+    num_features = data.shape[1] - 1  # 减去目标变量 'MEDV'
+    for k in range(num_features):
+        x = data.iloc[:, k]  # 获取当前特征列
+        features = data.columns[k]  # 获取当前特征名称
+        plt.scatter(x=data[features], y=data['MEDV'], label='data point', alpha=0.5)
+        plt.title(f'{features} vs MEDV')
+        plt.xlabel(features)
+        plt.ylabel('MEDV')
+        plt.legend()
+        plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #z分数法
-    mean_CRIM=data['CRIM'].mean()
-    std_CRIM=data['CRIM'].std()
-    lowline_CRIM=mean_CRIM-3*std_CRIM
-    highline_CRIM=mean_CRIM+3*std_CRIM
-    data=data[(data['CRIM']>=lowline_CRIM)&(data['CRIM']<=highline_CRIM)]
-    zero_of_crim=data[data['CRIM']<=0.5]
-    aver_of_price=zero_of_crim['MEDV'].mean()
-    #
+    # mean_CRIM=data['CRIM'].mean()
+    # std_CRIM=data['CRIM'].std()
+    # lowline_CRIM=mean_CRIM-3*std_CRIM
+    # highline_CRIM=mean_CRIM+3*std_CRIM
+    # data=data[(data['CRIM']>=lowline_CRIM)&(data['CRIM']<=highline_CRIM)]
+    # zero_of_crim=data[data['CRIM']<=0.5]
+    # aver_of_price=zero_of_crim['MEDV'].mean()
+
 
 
 
@@ -111,43 +167,41 @@ if __name__== '__main__':
 
     # #绘图
     #房价（MEDV）与犯罪率（CRIM）,散点图
-    data1=data.copy()
-    data1.loc[data['CRIM']<=0.5,'MEDV']=aver_of_price
-    data1=data1[data1['MEDV']<45]
-    plt.scatter(data1['CRIM'], data1['MEDV'],c='r',alpha=0.5,label='CRIM')
-    plt.title('Price Crimrates')
-    plt.xlabel('CRIM')
-    plt.ylabel('Price')
-    minplus2(data1['CRIM'], data1['MEDV'])
-    plt.show()
-
-    #房价（MEDV)与零售INDUS，折线图
-    # price_indus=data.groupby('INDUS')['MEDV'].mean()
-    # price_indus.plot(color=['b'])
+    # data1=data.copy()
+    # data1.loc[data['CRIM']<=0.5,'MEDV']=aver_of_price
+    # data1=data1[data1['MEDV']<45]
+    # plt.scatter(data1['CRIM'], data1['MEDV'],c='r',alpha=0.5,label='CRIM')
+    # plt.title('Price Crimrates')
+    # plt.xlabel('CRIM')
+    # plt.ylabel('Price')
+    # minplus2(data1['CRIM'], data1['MEDV'],type='step')
+    # plt.show()
+    #
+    # # 房价（MEDV)与零售INDUS，折线图
+    # plt.scatter(data1['INDUS'], data1['MEDV'],c='r',alpha=0.5,label='INDUS')
     # plt.title('Price by Indus')
     # plt.xlabel('Indus')
     # plt.ylabel('Price')
     # plt.xticks(ticks=[1,2,3,4,5,6,7,8,9,10,11,13,15,17,19])
-    # minplus2(data['INDUS'], data['MEDV'])
+    # minplus2(data['INDUS'], data['MEDV'],learningrate=0.01,type='step')
     # plt.show()
 
 
     #房价(MEDV)与学生与教师比例(PTRATIO),折线图
     # 线箱法
-    data2=data.copy()
-    Q1_piratio = data2["PIRATIO"].quantile(0.25)
-    Q3_piratio = data2["PIRATIO"].quantile(0.75)
-    diff = Q3_piratio - Q1_piratio
-    low = Q1_piratio - diff * 1.5
-    high = Q3_piratio + diff * 1.5
-    data2 = data2[(data2["PIRATIO"] >= low) & (data2["PIRATIO"] <= high)]
-    price_ptratip=data2.groupby('PIRATIO')['MEDV'].mean()
-    price_ptratip.plot(color=['b'])
-    plt.title('Price by Piratio')
-    plt.xlabel('Piratio')
-    plt.ylabel('Price')
-    minplus2(data2['PIRATIO'], data2['MEDV'])
-    plt.show()
+    # data2=data.copy()
+    # Q1_piratio = data2["PIRATIO"].quantile(0.25)
+    # Q3_piratio = data2["PIRATIO"].quantile(0.75)
+    # diff = Q3_piratio - Q1_piratio
+    # low = Q1_piratio - diff * 1.5
+    # high = Q3_piratio + diff * 1.5
+    # data2 = data2[(data2["PIRATIO"] >= low) & (data2["PIRATIO"] <= high)]
+    # plt.scatter(data1['PIRATIO'], data1['MEDV'],c='r',alpha=0.5,label='INDUS')
+    # plt.title('Price by Piratio')
+    # plt.xlabel('Piratio')
+    # plt.ylabel('Price')
+    # minplus2(data2['PIRATIO'], data2['MEDV'])
+    # plt.show()
 
     #
     # #房价(MEDV)与高速公路可达指数(RAD),折线图
