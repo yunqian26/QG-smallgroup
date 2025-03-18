@@ -18,7 +18,8 @@ B：1000×(Bk - 0.63)^2，其中Bk是城镇黑人的比例。
 LSTAT：低收入阶层人口比例。
 MEDV:自有住房的中位数价格，单位为1000美元
 '''
-def step_descent(x,y,learningrate=0.02,iterations=100):
+
+def step_descent(x,y,learningrate=0.01,iterations=1000):
     a1,b1=x.shape
     opening=np.zeros(b1)
     drops=[]
@@ -29,9 +30,12 @@ def step_descent(x,y,learningrate=0.02,iterations=100):
         drops.append(drop)
         step=(1/a1)*(x.T @ diff)
         opening =opening-learningrate*step
+        if np.isnan(opening).any() or np.isinf(opening).any():
+            print("梯度下降过程中出现无效值，停止迭代。")
+            break
     return opening,drops
 
-def minplus2(x, y,learningrate=0.02,iterations=100,type='none'):
+def minplus2(x, y,learningrate=0.01,iterations=1000,type='none'):
     e = np.vstack([x, np.ones(len(x))]).T
     if type=='none':
         coefficients, residuals, rank, s = np.linalg.lstsq(e, y, rcond=-1)
@@ -54,11 +58,13 @@ def minplus2(x, y,learningrate=0.02,iterations=100,type='none'):
     print(f'均方根误差：{rmse:.4f}')
     print(f'绝对系数：{r_2:.4f}')
 
+
+
 if __name__== '__main__':
     dataraw=pd.read_csv("boston.csv")
     lengthofdata=np.arange(len(dataraw))
     shuff=dataraw.sample(frac=1).reset_index(drop=True)
-    ratio=0.8
+    ratio=1
     ratio_reflect=1-ratio
     ratio_point=int(len(shuff)*ratio)
     ratio_repoint=int(len(shuff)*ratio_reflect)
@@ -100,35 +106,35 @@ if __name__== '__main__':
     # plt.figure(figsize=[10, 10])
     #
     # # 遍历每个特征
-    for j in range(data.shape[1]):
-        # 获取当前特征的数据
-        x = data.iloc[:, j]
-        # 绘制散点图
-        plt.scatter([i for i in range(data.shape[0])], x, label='data point', alpha=0.6)
-        # 计算分位数
-        quantiles = np.quantile(x, [0.25, 0.5, 0.75])
-        # 绘制分位数点
-        plt.scatter([round(data.shape[0] / 4), round(data.shape[0] / 2), round(data.shape[0] / 4 * 3)],
-                    quantiles, color='red', label='fen wei shu dian')
-        # 添加标签和标题
-        features_name=data.columns[j]
-        plt.xlabel('data suoyin')
-        plt.ylabel('MEDV')
-        plt.title(f'tezheng:{features_name}')
-        plt.legend()
-        plt.show()
-
-
-    num_features = data.shape[1] - 1  # 减去目标变量 'MEDV'
-    for k in range(num_features):
-        x = data.iloc[:, k]  # 获取当前特征列
-        features = data.columns[k]  # 获取当前特征名称
-        plt.scatter(x=data[features], y=data['MEDV'], label='data point', alpha=0.5)
-        plt.title(f'{features} vs MEDV')
-        plt.xlabel(features)
-        plt.ylabel('MEDV')
-        plt.legend()
-        plt.show()
+    # for j in range(data.shape[1]):
+    #     # 获取当前特征的数据
+    #     x = data.iloc[:, j]
+    #     # 绘制散点图
+    #     plt.scatter([i for i in range(data.shape[0])], x, label='data point', alpha=0.6)
+    #     # 计算分位数
+    #     quantiles = np.quantile(x, [0.25, 0.5, 0.75])
+    #     # 绘制分位数点
+    #     plt.scatter([round(data.shape[0] / 4), round(data.shape[0] / 2), round(data.shape[0] / 4 * 3)],
+    #                 quantiles, color='red', label='fen wei shu dian')
+    #     # 添加标签和标题
+    #     features_name=data.columns[j]
+    #     plt.xlabel('data suoyin')
+    #     plt.ylabel('MEDV')
+    #     plt.title(f'tezheng:{features_name}')
+    #     plt.legend()
+    #     plt.show()
+    #
+    #
+    # num_features = data.shape[1] - 1  # 减去目标变量 'MEDV'
+    # for k in range(num_features):
+    #     x = data.iloc[:, k]  # 获取当前特征列
+    #     features = data.columns[k]  # 获取当前特征名称
+    #     plt.scatter(x=data[features], y=data['MEDV'], label='data point', alpha=0.5)
+    #     plt.title(f'{features} vs MEDV')
+    #     plt.xlabel(features)
+    #     plt.ylabel('MEDV')
+    #     plt.legend()
+    #     plt.show()
     '''
     LSTAT
     RM
@@ -136,6 +142,87 @@ if __name__== '__main__':
     AGE
     CRIM
     '''
+
+    # data1 = data.copy()
+    # Q1_LSTAT = data1["LSTAT"].quantile(0.25)
+    # Q3_LSTAT = data1["LSTAT"].quantile(0.75)
+    # diff = Q3_LSTAT - Q1_LSTAT
+    # low = Q1_LSTAT - diff * 1.5
+    # high = Q3_LSTAT + diff * 1.5
+    # data1 = data1[(data1["LSTAT"] >= low) & (data1["LSTAT"] <= high)]
+    #
+    # plt.scatter(data1['LSTAT'], data1['MEDV'],c='r',alpha=0.5,label='LSTAT')
+    # plt.title('Price LSTATrates')
+    # plt.xlabel('LSTAT')
+    # plt.ylabel('Price')
+    # minplus2(data1['LSTAT'], data1['MEDV'],learningrate=0.009,iterations=2000,type='step')
+    # plt.show()
+
+    # data1 = data.copy()
+    # Q1_AGE = data1["AGE"].quantile(0.25)
+    # Q3_AGE = data1["AGE"].quantile(0.75)
+    # diff = Q3_AGE - Q1_AGE
+    # low = Q1_AGE - diff * 1.5
+    # high = Q3_AGE + diff * 1.5
+    # data1 = data1[(data1["AGE"] >= low) & (data1["AGE"] <= high)]
+    #
+    #
+    # mean_AGE = data['AGE'].mean()
+    # std_AGE = data['AGE'].std()
+    # lowline_AGE = mean_AGE - 3 * std_AGE
+    # highline_AGE = mean_AGE + 3 * std_AGE
+    # data = data[(data['AGE'] >= lowline_AGE) & (data['AGE'] <= highline_AGE)]
+    # zero_of_AGE = data[data['AGE'] <= 0.5]
+    # aver_of_price = zero_of_AGE['MEDV'].mean()
+    #
+    # #data1.loc[data['AGE'] <= 0.5, 'MEDV'] = aver_of_price
+    # data1 = data1[(data1['MEDV'] < 35)&(data1['MEDV'] > 10)]
+    # plt.scatter(data1['AGE'], data1['MEDV'], c='r', alpha=0.5, label='AGE')
+    # plt.title('Price AGETrates')
+    # plt.xlabel('AGE')
+    # plt.ylabel('Price')
+    # minplus2(data1['AGE'], data1['MEDV'], learningrate=0.0001, iterations=150000, type='step')
+    # plt.show()
+    '''拟合的直线方程为：y = -0.06x + 24.80
+    回归系数： [-0.06174238 24.79955344]
+    均方误差：24.7043
+    绝对误差：3.7955
+    均方根误差：0.2684
+    绝对系数：0.2194'''
+
+    data1 = data.copy()
+    Q1_AGE = data1["RM"].quantile(0.25)
+    Q3_AGE = data1["RM"].quantile(0.75)
+    diff = Q3_AGE - Q1_AGE
+    low = Q1_AGE - diff * 1.5
+    high = Q3_AGE + diff * 1.5
+    data1 = data1[(data1["RM"] >= low) & (data1["RM"] <= high)]
+
+
+    mean_AGE = data['RM'].mean()
+    std_AGE = data['RM'].std()
+    lowline_AGE = mean_AGE - 3 * std_AGE
+    highline_AGE = mean_AGE + 3 * std_AGE
+    data = data[(data['RM'] >= lowline_AGE) & (data['RM'] <= highline_AGE)]
+    zero_of_AGE = data[data['RM'] <= 0.5]
+    aver_of_price = zero_of_AGE['MEDV'].mean()
+
+    data1.loc[data['RM'] <= 0.5, 'MEDV'] = aver_of_price
+    data1 = data1[(data1['MEDV'] < 45)&(data1['MEDV'] > 10)]
+    plt.scatter(data1['RM'], data1['MEDV'], c='b', alpha=0.4, label='RM')
+    plt.title('Price AGETrates')
+    plt.xlabel('RM')
+    plt.ylabel('Price')
+    minplus2(data1['RM'], data1['MEDV'], learningrate=0.001, iterations=120000, type='step')
+    plt.show()
+
+
+    ''' 拟合的直线方程为：y = 6.16
+    x + -16.60
+    回归系数： [6.16323624 - 16.60444629]
+    均方误差：24.1309
+    绝对误差：3.6512
+    均方根误差：0.2326'''
 
 
 
