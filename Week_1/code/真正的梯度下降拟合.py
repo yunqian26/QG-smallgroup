@@ -11,3 +11,5 @@ def step_descent(x,y,learningrate=0.02,iterations=100):
         step=(1/x)*(a.T @ diff)
         opening=opening*(1-step)
     return opening,droping
+
+
