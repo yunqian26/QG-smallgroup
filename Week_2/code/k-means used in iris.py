@@ -23,14 +23,14 @@ if __name__ == '__main__':
     std = np.std(X, axis=0)
     X_clean = (X - mean) / std
     K = 4
-    centers, cluster = k_means(X_clean, K)
-    print("Centers:")
-    print(centers)
-    print("Cluster labels:")
-    print(cluster)
+    # centers, cluster = k_means(X_clean, K)
+    # print("Centers:")
+    # print(centers)
+    # print("Cluster labels:")
+    # print(cluster)
 
     plt.scatter(X_clean.iloc[:, 0], X_clean.iloc[:, 1], c='b')
-    plt.scatter(centers[:, 0], centers[:, 1], c='r', s=200, alpha=0.75)
+    # plt.scatter(centers[:, 0], centers[:, 1], c='r', s=200, alpha=0.75)
     plt.title('K-means Clustering on IRIS Dataset')
     plt.xlabel('Feature 1')
     plt.ylabel('Feature 2')
