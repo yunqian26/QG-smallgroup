@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 def k_means(X, K, maxiters=100, tol=1e-6):
     centers = X[np.random.choice(X.shape[0], K, replace=False)]#随机选取中心点
     for i in range(maxiters):#开始迭代
@@ -18,7 +17,6 @@ def k_means(X, K, maxiters=100, tol=1e-6):
 if __name__ == '__main__':
     url = 'https://gairuo.com/file/data/dataset/iris.data'
     dataraw = pd.read_csv(url)
-
     print(dataraw.head()) #检查
     X = dataraw.iloc[:, :-1] #假设最后一列是标签，只取特征
     mean = np.mean(X, axis=0)#计算列平均值
