@@ -4,11 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # 定义函数φ(α, s)
 def phi(alpha, s):
-    # 计算分子
     numerator = s**2 * (alpha + (1 - alpha) * np.abs(s - 1))**2
-    # 计算分母
     denominator = alpha**2 * (1 - np.abs(s - 1))**2 * (1 - (alpha + (1 - alpha) * np.abs(s - 1))**2)
-    # 返回结果
     return numerator / denominator
 
 # 创建网格数据
@@ -35,8 +32,9 @@ ax.set_title(r'3D Surface Plot of $\phi(\alpha, s)$')
 
 # 添加颜色条
 fig.colorbar(surf, shrink=0.5, aspect=10)
-ax.set_xticks([0.1, 0.3, 0.5, 0.7, 0.9])
-# 调整视角
-ax.view_init(elev=15 , azim=1)  # 设置俯仰角为30度，方位角为120度
 
+# 调整视角
+ax.view_init(elev=15, azim=0)  # 设置俯仰角为30度，方位角为120度
+
+# 显示图形
 plt.show()
