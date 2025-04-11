@@ -94,7 +94,7 @@ def run_sweep_experiment(s_values, num_runs=num_runs):
 
     # 从本地.npy文件读取位置坐标
     try:
-        positions = np.load("D:\\Desktop\\中期考核\\数据集\\B\\init_positions.npy")  # 从本地.npy文件读取位置坐标
+        positions = np.load("D:\\OneDrive\\文档\\GitHub\\QG-smallgroup\\中期考核\\数据集\\B\\init_positions.npy")  # 从本地.npy文件读取位置坐标
 
         if len(positions) != n:
             raise ValueError("文件中的位置坐标数量与n不匹配")
